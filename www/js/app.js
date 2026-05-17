@@ -39,6 +39,7 @@ window.onload = async () => {
         document.body.classList.add('dark-mode');
     }
 
+    if (localStorage.getItem('psm_sound_fx') === null) localStorage.setItem('psm_sound_fx', 'true');
     const settingSuara = document.getElementById('setting-suara');
     if (settingSuara) settingSuara.checked = isSoundOn();
 

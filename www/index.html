@@ -8,7 +8,7 @@
     <meta name="theme-color" content="#059669">
     <link rel="apple-touch-icon" href="assets/icons/logo-nota-default.png">
     <link rel="icon" href="assets/icons/logo-nota-default.png">
-    <link rel="stylesheet" href="css/style.css?v=420">
+    <link rel="stylesheet" href="css/style.css?v=430">
 </head>
 <body>
 
@@ -180,49 +180,62 @@
 
         
 
-        <div style="margin-bottom: 20px; background: var(--bg); padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
-            <h4 style="margin: 0 0 10px 0; font-size: 13px; color:var(--primary);">🧾 Format Nota</h4>
-            <label style="font-size:11px; font-weight:bold; color:var(--text); display:block; margin-bottom:5px;">Nama Operator / Ditimbang Oleh</label>
-            <input type="text" id="nota-operator-name" placeholder="Contoh: Asri" oninput="this.value=this.value.trimStart();" style="margin-bottom:10px; font-size:14px;">
+        <div style="margin-bottom: 20px; background: #ecfdf5; padding: 15px; border-radius: 8px; border: 1px solid #86efac;">
+            <h4 style="margin: 0 0 8px 0; font-size: 13px; color:var(--primary);">🔐 Menu Setelan Lanjutan</h4>
+            <p style="font-size:10px; color:#64748b; margin:0 0 10px 0; line-height:1.4;">Format nota, efek suara, dan ubah PIN dikunci agar tidak berubah tidak sengaja di lapangan.</p>
+            <button onclick="openAdvancedSettings()" style="background:#059669; color:white; border:none; padding:12px; border-radius:8px; width:100%; font-weight:bold; cursor:pointer;">🔐 MASUK MENU SETELAN</button>
+        </div>
 
-            <label style="font-size:11px; font-weight:bold; color:var(--text); display:block; margin-bottom:5px;">Logo Nota Gambar</label>
-            <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
-                <div style="width:62px; height:62px; border:1px solid var(--border); background:white; border-radius:10px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
-                    <img id="nota-logo-preview" src="assets/icons/header-nota-default.png" style="max-width:180px; max-height:60px; object-fit:contain; width:auto; height:auto;" alt="Logo Nota">
-                </div>
-                <div style="flex:1;">
-                    <input type="file" id="nota-logo-input" accept="image/*" onchange="pilihLogoNota(event)" style="font-size:12px; padding:8px; margin-bottom:6px;">
-                    <button onclick="resetNotaLogoDefault()" style="background:#64748b; color:white; border:none; padding:8px; border-radius:8px; width:100%; font-weight:bold; font-size:11px;">PAKAI LOGO DEFAULT</button>
-                </div>
+        <div id="advanced-settings-panel" style="display:none; margin-bottom: 20px; background: #f8fafc; padding: 12px; border-radius: 10px; border: 2px solid #059669;">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px;">
+                <h4 style="margin:0; font-size: 13px; color:var(--primary);">🔐 SETELAN TERKUNCI</h4>
+                <button onclick="closeAdvancedSettings()" style="background:#64748b; color:white; border:none; padding:6px 10px; border-radius:7px; font-size:11px; font-weight:bold;">TUTUP</button>
             </div>
 
-            <label style="display:flex; align-items:center; gap:8px; font-size:12px; font-weight:bold; color:var(--text); margin-bottom:8px;">
-                <input type="checkbox" id="nota-show-logo" style="width:18px; height:18px;"> Tampilkan logo di nota gambar
-            </label>
+            <div style="margin-bottom: 14px; background: var(--surface); padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
+                <h4 style="margin: 0 0 10px 0; font-size: 13px; color:var(--primary);">🧾 Format Nota</h4>
+                <label style="font-size:11px; font-weight:bold; color:var(--text); display:block; margin-bottom:5px;">Nama Operator / Ditimbang Oleh</label>
+                <input type="text" id="nota-operator-name" placeholder="Contoh: Asri" oninput="this.value=this.value.trimStart();" style="margin-bottom:10px; font-size:14px;">
 
-            <div style="background:rgba(245,158,11,0.12); border:1px solid #fbbf24; padding:10px; border-radius:8px; margin-bottom:10px;">
+                <label style="font-size:11px; font-weight:bold; color:var(--text); display:block; margin-bottom:5px;">Logo Nota Gambar</label>
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+                    <div style="width:62px; height:62px; border:1px solid var(--border); background:white; border-radius:10px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                        <img id="nota-logo-preview" src="assets/icons/header-nota-default.png" style="max-width:180px; max-height:60px; object-fit:contain; width:auto; height:auto;" alt="Logo Nota">
+                    </div>
+                    <div style="flex:1;">
+                        <input type="file" id="nota-logo-input" accept="image/*" onchange="pilihLogoNota(event)" style="font-size:12px; padding:8px; margin-bottom:6px;">
+                        <button onclick="resetNotaLogoDefault()" style="background:#64748b; color:white; border:none; padding:8px; border-radius:8px; width:100%; font-weight:bold; font-size:11px;">PAKAI LOGO DEFAULT</button>
+                    </div>
+                </div>
+
                 <label style="display:flex; align-items:center; gap:8px; font-size:12px; font-weight:bold; color:var(--text); margin-bottom:8px;">
-                    <input type="checkbox" id="nota-thermal-logo-bitmap-enabled" style="width:18px; height:18px;"> Cetak logo hitam putih di thermal
+                    <input type="checkbox" id="nota-show-logo" style="width:18px; height:18px;"> Tampilkan logo di nota gambar
                 </label>
-                <p style="font-size:10px; color:#64748b; margin:0; line-height:1.35;">Logo thermal dicetak hitam putih kecil di bagian atas struk. Jika printer terlalu lambat, matikan opsi ini.</p>
+
+                <div style="background:rgba(245,158,11,0.12); border:1px solid #fbbf24; padding:10px; border-radius:8px; margin-bottom:10px;">
+                    <label style="display:flex; align-items:center; gap:8px; font-size:12px; font-weight:bold; color:var(--text); margin-bottom:8px;">
+                        <input type="checkbox" id="nota-thermal-logo-bitmap-enabled" style="width:18px; height:18px;"> Cetak logo hitam putih di thermal
+                    </label>
+                    <p style="font-size:10px; color:#64748b; margin:0; line-height:1.35;">Logo thermal dicetak hitam putih kecil di bagian atas struk. Jika printer terlalu lambat, matikan opsi ini.</p>
+                </div>
+
+                <button onclick="saveNotaSettingsFromUI()" style="background:#059669; color:white; border:none; padding:11px; border-radius:8px; width:100%; font-weight:bold;">💾 SIMPAN FORMAT NOTA</button>
             </div>
 
-            <button onclick="saveNotaSettingsFromUI()" style="background:#059669; color:white; border:none; padding:11px; border-radius:8px; width:100%; font-weight:bold;">💾 SIMPAN FORMAT NOTA</button>
-        </div>
+            <div style="margin-bottom: 14px; background: var(--surface); padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
+                <h4 style="margin: 0 0 10px 0; font-size: 13px;">🔊 Efek Suara Aplikasi</h4>
+                <label style="display: flex; align-items: center; gap: 10px; font-size: 14px; cursor: pointer; font-weight: bold; color: var(--text);">
+                    <input type="checkbox" id="setting-suara" onchange="toggleSuara()" style="width: 20px; height: 20px; cursor: pointer;">
+                    Aktifkan Suara Tombol
+                </label>
+            </div>
 
-        <div style="margin-bottom: 20px; background: var(--bg); padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
-            <h4 style="margin: 0 0 10px 0; font-size: 13px;">Efek Suara Aplikasi</h4>
-            <label style="display: flex; align-items: center; gap: 10px; font-size: 14px; cursor: pointer; font-weight: bold; color: var(--text);">
-                <input type="checkbox" id="setting-suara" onchange="toggleSuara()" style="width: 20px; height: 20px; cursor: pointer;">
-                Aktifkan Suara Tombol
-            </label>
-        </div>
-
-        <div style="margin-bottom: 20px; background: var(--bg); padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
-            <h4 style="margin: 0 0 10px 0; font-size: 13px;">Ubah PIN Akses</h4>
-            <input type="password" id="pin-lama" placeholder="PIN Lama" style="margin-bottom: 8px; font-size: 14px;">
-            <input type="password" id="pin-baru" placeholder="PIN Baru (Min 4 Angka)" style="margin-bottom: 8px; font-size: 14px;">
-            <button onclick="ubahPin()" style="background:#0ea5e9; color:white; border:none; padding:10px; border-radius:8px; width:100%; font-weight:bold;">SIMPAN PIN BARU</button>
+            <div style="margin-bottom: 0; background: var(--surface); padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
+                <h4 style="margin: 0 0 10px 0; font-size: 13px;">🔑 Ubah PIN Akses</h4>
+                <input type="password" id="pin-lama" placeholder="PIN Lama" style="margin-bottom: 8px; font-size: 14px;">
+                <input type="password" id="pin-baru" placeholder="PIN Baru (Min 4 Angka)" style="margin-bottom: 8px; font-size: 14px;">
+                <button onclick="ubahPin()" style="background:#0ea5e9; color:white; border:none; padding:10px; border-radius:8px; width:100%; font-weight:bold;">SIMPAN PIN BARU</button>
+            </div>
         </div>
 
         <div style="margin-bottom: 20px; background: var(--bg); padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
@@ -244,25 +257,25 @@
     </div>
 </div>
 
-<script src="vendor/html2canvas.min.js?v=420"></script>
-<script src="js/config.js?v=420"></script>
-<script src="js/state.js?v=420"></script>
-<script src="js/helper.js?v=420"></script>
-<script src="js/db.js?v=420"></script>
-<script src="js/sound.js?v=420"></script>
-<script src="js/security.js?v=420"></script>
-<script src="js/ui.js?v=420"></script>
-<script src="js/storage.js?v=420"></script>
-<script src="js/sync.js?v=420"></script>
-<script src="js/table.js?v=420"></script>
-<script src="js/autocomplete.js?v=450"></script>
-<script src="js/form.js?v=420"></script>
-<script src="js/settings-format.js?v=420"></script>
-<script src="js/report.js?v=420"></script>
-<script src="js/thermal.js?v=420"></script>
-<script src="js/native.js?v=420"></script>
-<script src="js/backup.js?v=420"></script>
-<script src="js/app.js?v=420"></script>
-<script src="js/sw-register.js?v=420"></script>
+<script src="vendor/html2canvas.min.js?v=430"></script>
+<script src="js/config.js?v=430"></script>
+<script src="js/state.js?v=430"></script>
+<script src="js/helper.js?v=430"></script>
+<script src="js/db.js?v=430"></script>
+<script src="js/sound.js?v=430"></script>
+<script src="js/security.js?v=430"></script>
+<script src="js/ui.js?v=430"></script>
+<script src="js/storage.js?v=430"></script>
+<script src="js/sync.js?v=430"></script>
+<script src="js/table.js?v=430"></script>
+<script src="js/autocomplete.js?v=460"></script>
+<script src="js/form.js?v=430"></script>
+<script src="js/settings-format.js?v=430"></script>
+<script src="js/report.js?v=430"></script>
+<script src="js/thermal.js?v=430"></script>
+<script src="js/native.js?v=430"></script>
+<script src="js/backup.js?v=430"></script>
+<script src="js/app.js?v=430"></script>
+<script src="js/sw-register.js?v=430"></script>
 </body>
 </html>

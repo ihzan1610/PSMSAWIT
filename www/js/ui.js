@@ -1,11 +1,13 @@
 // ===============================
 // PSM SAWIT - ui.js
-// PSM SAWIT FIX: toolbar edit stabil, tanggal/jam tidak hilang saat lihat/edit data.
+// PSM SAWIT FIX: settings submenu terkunci + toolbar stabil.
 // ===============================
 
     window.addEventListener('hashchange', () => {
         if (!location.hash || location.hash === "") {
             document.getElementById('settings-modal').style.display = 'none';
+            const advancedSettingsPanel = document.getElementById('advanced-settings-panel');
+            if (advancedSettingsPanel) advancedSettingsPanel.style.display = 'none';
             document.getElementById('preview-modal').style.display = 'none';
             clearSelection(); 
             renderLiveTable();
@@ -13,12 +15,43 @@
     });
 
     function openSettings() { 
-        beepClick(); 
+        beepClick();
+        const advanced = document.getElementById('advanced-settings-panel');
+        if (advanced) advanced.style.display = 'none';
+        if (typeof refreshNotaSettingsUI === 'function') refreshNotaSettingsUI();
+        const settingSuara = document.getElementById('setting-suara');
+        if (settingSuara && typeof isSoundOn === 'function') settingSuara.checked = isSoundOn();
         document.getElementById('settings-modal').style.display = 'block'; 
         location.hash = 'settings'; 
     }
+
+    function openAdvancedSettings() {
+        beepClick();
+        const p = prompt('Masukkan PIN untuk membuka Menu Setelan:');
+        if (p === null) return;
+        if (p !== getPin()) {
+            beepError();
+            alert('PIN salah. Menu setelan tidak dibuka.');
+            return;
+        }
+        const advanced = document.getElementById('advanced-settings-panel');
+        if (advanced) advanced.style.display = 'block';
+        if (typeof refreshNotaSettingsUI === 'function') refreshNotaSettingsUI();
+        const settingSuara = document.getElementById('setting-suara');
+        if (settingSuara && typeof isSoundOn === 'function') settingSuara.checked = isSoundOn();
+        beepSuccess();
+    }
+
+    function closeAdvancedSettings() {
+        beepClick();
+        const advanced = document.getElementById('advanced-settings-panel');
+        if (advanced) advanced.style.display = 'none';
+    }
+
     function closeSettings() { 
-        beepClick(); 
+        beepClick();
+        const advanced = document.getElementById('advanced-settings-panel');
+        if (advanced) advanced.style.display = 'none';
         if (location.hash === '#settings') { history.back(); } 
         else { document.getElementById('settings-modal').style.display = 'none'; }
     }

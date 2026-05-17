@@ -3,7 +3,7 @@
 // V36 cache: PsmNative saver final
 // ===============================
 
-const CACHE_NAME = 'psm-sawit-fix-monitoring-order-v42';
+const CACHE_NAME = 'psm-sawit-fix-settings-locked-v43';
 
 const APP_SHELL = [
   './',

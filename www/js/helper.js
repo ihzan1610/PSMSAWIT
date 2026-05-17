@@ -212,16 +212,70 @@ function buildHtmlRow(label, obj) {
     return lines;
 }
 
+function thermalShortLabel(label, level = 0) {
+    const raw = String(label || '').toLowerCase();
+    if (level <= 0) {
+        if (raw.includes('jalan')) return 'Jalan';
+        if (raw.includes('langsir')) return 'Langsir';
+        if (raw.includes('panen')) return 'Panen';
+        return safeText(label, 'Potongan');
+    }
+    if (level === 1) {
+        if (raw.includes('jalan')) return 'Jln';
+        if (raw.includes('langsir')) return 'Lgsr';
+        if (raw.includes('panen')) return 'Pnn';
+        return safeText(label, 'Pot').slice(0, 6);
+    }
+    if (raw.includes('jalan')) return 'J';
+    if (raw.includes('langsir')) return 'L';
+    if (raw.includes('panen')) return 'P';
+    return safeText(label, 'P').slice(0, 1);
+}
+
+function makeThermalDeductionLeft(label, item, showWeight, level) {
+    const rate = formatKg(item.rate);
+    const weight = formatKg(item.weight);
+    const name = thermalShortLabel(label, level);
+
+    if (showWeight) {
+        if (level === 0) return `* ${name} (${rate}) ${weight}kg`;
+        if (level === 1) return `* ${name}${rate} ${weight}kg`;
+        return `*${name}${rate} ${weight}kg`;
+    }
+
+    if (level === 0) return `* ${name} (${rate})`;
+    if (level === 1) return `* ${name}${rate}`;
+    return `*${name}${rate}`;
+}
+
+function alignThermalOneLine(left, right, width = 32) {
+    left = String(left || '');
+    right = String(right || '');
+
+    if (left.length + 1 + right.length <= width) return alignLR(left, right);
+
+    const keepLeft = Math.max(1, width - right.length - 1);
+    return left.slice(0, keepLeft) + ' ' + right;
+}
+
 function buildThermalDeductionRows(label, obj) {
     let lines = '';
     const rows = sortedDeductionEntries(obj);
     const showWeight = rows.length > 1;
 
     rows.forEach(item => {
-        const left = showWeight
-            ? `* ${label} (${formatKg(item.rate)}) ${formatKg(item.weight)}kg`
-            : `* ${label} (${formatKg(item.rate)})`;
-        lines += alignLR(left, `-Rp ${fNum(item.amount)}`) + `\n`;
+        const right = `-Rp${fNum(item.amount)}`;
+        let left = makeThermalDeductionLeft(label, item, showWeight, 0);
+
+        if (left.length + 1 + right.length > 32) {
+            left = makeThermalDeductionLeft(label, item, showWeight, 1);
+        }
+        if (left.length + 1 + right.length > 32) {
+            left = makeThermalDeductionLeft(label, item, showWeight, 2);
+        }
+
+        lines += alignThermalOneLine(left, right, 32) + `
+`;
     });
 
     return lines;

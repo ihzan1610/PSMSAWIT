@@ -1,16 +1,16 @@
 // ===============================
 // PSM SAWIT - settings-format.js
-// V28: Format nota final dengan header nota lebar + logo thermal hitam putih.
+// PSM SAWIT FIX: Format nota default centang + menu setelan terkunci.
 // ===============================
 
-const PSM_NOTA_SETTINGS_KEY = 'psm_nota_format_settings_v23';
+const PSM_NOTA_SETTINGS_KEY = 'psm_nota_format_settings_v43';
 const PSM_OLD_NOTA_SETTINGS_KEY = 'psm_nota_format_settings_v21';
 
 const DEFAULT_NOTA_SETTINGS = {
     operatorName: 'Asri',
     logoDataUrl: '',
     showLogoImage: true,
-    showLogoThermalBitmap: false
+    showLogoThermalBitmap: true
 };
 
 function migrateOldNotaSettings() {
@@ -23,7 +23,7 @@ function migrateOldNotaSettings() {
             operatorName: old.operatorName || 'Asri',
             logoDataUrl: old.logoDataUrl || '',
             showLogoImage: old.showLogoImage !== false,
-            showLogoThermalBitmap: false
+            showLogoThermalBitmap: true
         });
         localStorage.setItem(PSM_NOTA_SETTINGS_KEY, JSON.stringify(migrated));
     } catch (err) {
