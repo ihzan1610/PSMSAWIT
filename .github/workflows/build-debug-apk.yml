@@ -121,6 +121,16 @@ jobs:
       - name: Sync Android after patches
         run: npx cap sync android
 
+      - name: Fix duplicate Android icon resources
+        run: |
+          echo "Membersihkan duplicate icon resource..."
+
+          rm -f android/app/src/main/res/values/ic_launcher_background.xml
+          rm -f android/app/src/main/res/values/ic_launcher_foreground.xml
+
+          echo "Cek sisa resource ic_launcher_background:"
+          grep -R "ic_launcher_background" android/app/src/main/res || true
+
       - name: Verify native plugins
         run: |
           echo "=== Cek native plugin ==="
