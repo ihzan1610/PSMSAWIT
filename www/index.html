@@ -8,7 +8,7 @@
     <meta name="theme-color" content="#059669">
     <link rel="apple-touch-icon" href="assets/icons/logo-nota-default.png">
     <link rel="icon" href="assets/icons/logo-nota-default.png">
-    <link rel="stylesheet" href="css/style.css?v=430">
+    <link rel="stylesheet" href="css/style.css?v=420">
 </head>
 <body>
 
@@ -181,18 +181,6 @@
         
 
         <div style="margin-bottom: 20px; background: var(--bg); padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
-            <h4 style="margin: 0 0 10px 0; font-size: 13px; color:var(--primary);">🔐 Menu Format, Suara & PIN</h4>
-            <p style="font-size:10px; color:#64748b; margin:0 0 10px 0; line-height:1.4;">Menu ini dikunci dengan PIN agar format nota, suara tombol, dan PIN akses tidak mudah diubah.</p>
-            <button onclick="openPrivateSettingsPanel()" style="background:#111827; color:white; border:none; padding:12px; border-radius:8px; width:100%; font-weight:bold; cursor:pointer;">🔐 MASUK MENU TERKUNCI</button>
-        </div>
-
-        <div id="private-settings-panel" style="display:none; margin-bottom: 20px; padding: 12px; border-radius: 12px; border: 2px solid #111827; background: rgba(17,24,39,0.03);">
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:12px;">
-                <b style="font-size:13px; color:var(--primary);">🔓 Pengaturan Terkunci Terbuka</b>
-                <button onclick="closePrivateSettingsPanel()" style="background:#64748b; color:white; border:none; border-radius:8px; padding:7px 10px; font-weight:bold; font-size:11px;">TUTUP</button>
-            </div>
-
-        <div style="margin-bottom: 20px; background: var(--bg); padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
             <h4 style="margin: 0 0 10px 0; font-size: 13px; color:var(--primary);">🧾 Format Nota</h4>
             <label style="font-size:11px; font-weight:bold; color:var(--text); display:block; margin-bottom:5px;">Nama Operator / Ditimbang Oleh</label>
             <input type="text" id="nota-operator-name" placeholder="Contoh: Asri" oninput="this.value=this.value.trimStart();" style="margin-bottom:10px; font-size:14px;">
@@ -237,8 +225,6 @@
             <button onclick="ubahPin()" style="background:#0ea5e9; color:white; border:none; padding:10px; border-radius:8px; width:100%; font-weight:bold;">SIMPAN PIN BARU</button>
         </div>
 
-        </div>
-
         <div style="margin-bottom: 20px; background: var(--bg); padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
             <h4 style="margin: 0 0 10px 0; font-size: 13px;">Manajemen Data & Backup</h4>
             <div style="display: flex; gap: 8px; margin-bottom: 8px;">
@@ -258,25 +244,25 @@
     </div>
 </div>
 
-<script src="vendor/html2canvas.min.js?v=430"></script>
-<script src="js/config.js?v=430"></script>
-<script src="js/state.js?v=430"></script>
-<script src="js/helper.js?v=430"></script>
-<script src="js/db.js?v=430"></script>
-<script src="js/sound.js?v=430"></script>
-<script src="js/security.js?v=430"></script>
-<script src="js/ui.js?v=430"></script>
-<script src="js/storage.js?v=430"></script>
-<script src="js/sync.js?v=430"></script>
-<script src="js/table.js?v=430"></script>
-<script src="js/autocomplete.js?v=430"></script>
-<script src="js/form.js?v=430"></script>
-<script src="js/settings-format.js?v=430"></script>
-<script src="js/report.js?v=430"></script>
-<script src="js/thermal.js?v=430"></script>
-<script src="js/native.js?v=430"></script>
-<script src="js/backup.js?v=430"></script>
-<script src="js/app.js?v=430"></script>
-<script src="js/sw-register.js?v=430"></script>
+<script src="vendor/html2canvas.min.js?v=420"></script>
+<script src="js/config.js?v=420"></script>
+<script src="js/state.js?v=420"></script>
+<script src="js/helper.js?v=420"></script>
+<script src="js/db.js?v=420"></script>
+<script src="js/sound.js?v=420"></script>
+<script src="js/security.js?v=420"></script>
+<script src="js/ui.js?v=420"></script>
+<script src="js/storage.js?v=420"></script>
+<script src="js/sync.js?v=420"></script>
+<script src="js/table.js?v=420"></script>
+<script src="js/autocomplete.js?v=450"></script>
+<script src="js/form.js?v=420"></script>
+<script src="js/settings-format.js?v=420"></script>
+<script src="js/report.js?v=420"></script>
+<script src="js/thermal.js?v=420"></script>
+<script src="js/native.js?v=420"></script>
+<script src="js/backup.js?v=420"></script>
+<script src="js/app.js?v=420"></script>
+<script src="js/sw-register.js?v=420"></script>
 </body>
 </html>

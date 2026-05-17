@@ -1,32 +1,68 @@
 // ===============================
 // PSM SAWIT - autocomplete.js
-// Custom autocomplete untuk Pemilik & Sopir.
+// FIX FINAL AUTOCOMPLETE
 // Aturan:
 // 1. Fokus kolom kosong tidak langsung membuka daftar.
 // 2. Daftar muncul saat mengetik huruf.
-// 3. Tombol panah membuka daftar lengkap.
-// 4. Klik saran mengisi kolom.
+// 3. Tombol panah ▼ membuka daftar lengkap.
+// 4. Klik/tap saran Pemilik atau Sopir langsung mengisi kolom.
 // 5. Tetap boleh input manual tanpa memilih saran.
+// Catatan bug fix:
+// - Data utama `db`, `savedOwners`, `savedDrivers` dibuat dengan `let`, jadi tidak selalu ada di window.
+//   Karena itu opsi harus dibaca dari variabel global langsung + localStorage + IndexedDB mirror.
 // ===============================
 
 (function(){
     const CFG = {
-        owner: { inputId: 'in-owner', listId: 'psm-owner-list' },
-        driver: { inputId: 'in-driver', listId: 'psm-driver-list' }
+        owner: { inputId: 'in-owner', listId: 'psm-owner-list', field: 'owner', storeKey: 'psm_owners' },
+        driver: { inputId: 'in-driver', listId: 'psm-driver-list', field: 'driver', storeKey: 'psm_drivers' }
     };
 
     function norm(v) {
         return String(v || '').toUpperCase().trimStart();
     }
 
+    function safeJson(value, fallback) {
+        try { return value ? JSON.parse(value) : fallback; } catch (_) { return fallback; }
+    }
+
     function uniqueSorted(arr) {
-        return [...new Set((arr || []).map(norm).map(x => x.trim()).filter(Boolean))].sort((a,b) => a.localeCompare(b));
+        return [...new Set((arr || [])
+            .map(norm)
+            .map(x => x.trim())
+            .filter(Boolean)
+        )].sort((a,b) => a.localeCompare(b));
+    }
+
+    function getGlobalDb() {
+        let out = [];
+        try { if (typeof db !== 'undefined' && Array.isArray(db)) out = out.concat(db); } catch (_) {}
+        try { if (window.db && Array.isArray(window.db)) out = out.concat(window.db); } catch (_) {}
+        try { out = out.concat(safeJson(localStorage.getItem('psm_database_master'), [])); } catch (_) {}
+        return out.filter(Boolean);
+    }
+
+    function getSavedNames(type) {
+        const cfg = CFG[type];
+        let out = [];
+        try {
+            if (type === 'owner' && typeof savedOwners !== 'undefined' && Array.isArray(savedOwners)) out = out.concat(savedOwners);
+            if (type === 'driver' && typeof savedDrivers !== 'undefined' && Array.isArray(savedDrivers)) out = out.concat(savedDrivers);
+        } catch (_) {}
+        try {
+            if (type === 'owner' && window.savedOwners && Array.isArray(window.savedOwners)) out = out.concat(window.savedOwners);
+            if (type === 'driver' && window.savedDrivers && Array.isArray(window.savedDrivers)) out = out.concat(window.savedDrivers);
+        } catch (_) {}
+        try { out = out.concat(safeJson(localStorage.getItem(cfg.storeKey), [])); } catch (_) {}
+        return out;
     }
 
     function getOptions(type) {
-        const base = type === 'owner' ? (window.savedOwners || []) : (window.savedDrivers || []);
-        const fromDb = (window.db || []).map(x => type === 'owner' ? x.owner : x.driver);
-        return uniqueSorted([...base, ...fromDb]);
+        const cfg = CFG[type];
+        if (!cfg) return [];
+        const fromSaved = getSavedNames(type);
+        const fromDb = getGlobalDb().map(x => x ? x[cfg.field] : '').filter(Boolean);
+        return uniqueSorted([...fromSaved, ...fromDb]);
     }
 
     function getEl(type) {
@@ -53,22 +89,20 @@
 
         if (mode !== 'all') {
             if (!q) { hideList(type); return; }
-            // Saat mengetik, tampilkan nama yang diawali huruf/teks yang diketik.
-            options = options.filter(x => x.startsWith(q));
+            // Prioritas: nama yang diawali huruf/teks yang diketik.
+            const prefix = options.filter(x => x.startsWith(q));
+            // Cadangan: nama yang mengandung teks, supaya data lama mudah dicari.
+            const contains = options.filter(x => !x.startsWith(q) && x.includes(q));
+            options = [...prefix, ...contains];
         }
 
-        // Jika tidak ada yang diawali teks, bantu tampilkan yang mengandung teks supaya data lama tetap mudah dicari.
-        if (mode !== 'all' && options.length === 0 && q) {
-            options = getOptions(type).filter(x => x.includes(q));
-        }
-
-        options = options.slice(0, 80);
+        options = options.slice(0, 100);
 
         if (options.length === 0) {
             list.innerHTML = `<div class="psm-ac-empty">Tidak ada saran. Boleh isi manual.</div>`;
         } else {
             list.innerHTML = options.map(name => `
-                <div class="psm-ac-item" data-type="${type}" data-value="${escapeHtmlLocal(name)}">${escapeHtmlLocal(name)}</div>
+                <div class="psm-ac-item" role="button" tabindex="-1" data-type="${type}" data-value="${escapeHtmlLocal(name)}">${escapeHtmlLocal(name)}</div>
             `).join('');
         }
         list.classList.add('show');
@@ -116,14 +150,22 @@
     };
 
     window.closeAllPsmNameLists = closeAll;
+    window.getPsmNameOptionsDebug = getOptions;
 
-    document.addEventListener('click', function(e){
+    function handlePickEvent(e) {
         const item = e.target.closest && e.target.closest('.psm-ac-item');
-        if (item) {
-            e.preventDefault();
-            selectName(item.getAttribute('data-type'), item.getAttribute('data-value'));
-            return;
-        }
+        if (!item) return false;
+        e.preventDefault();
+        e.stopPropagation();
+        selectName(item.getAttribute('data-type'), item.getAttribute('data-value'));
+        return true;
+    }
+
+    // Pakai mousedown + touchstart agar tap di Android tidak hilang karena keyboard/focus blur.
+    document.addEventListener('mousedown', handlePickEvent, true);
+    document.addEventListener('touchstart', handlePickEvent, { capture: true, passive: false });
+    document.addEventListener('click', function(e){
+        if (handlePickEvent(e)) return;
         if (!(e.target.closest && e.target.closest('.psm-autocomplete'))) {
             closeAll();
         }
