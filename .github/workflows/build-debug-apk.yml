@@ -1,0 +1,176 @@
+name: Build Android Debug APK - PSM SAWIT FIX
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  build:
+    name: Build Debug APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          check-latest: true
+
+      - name: Show versions
+        run: |
+          echo "Node version:"
+          node -v
+          echo "NPM version:"
+          npm -v
+          echo "Java version:"
+          java -version
+
+      - name: Clean old build files
+        run: |
+          rm -rf android
+          rm -rf node_modules
+          rm -f package-lock.json
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Copy vendor files
+        run: |
+          if [ -f scripts/copy-html2canvas.js ]; then
+            node scripts/copy-html2canvas.js
+          else
+            echo "copy-html2canvas.js tidak ada, lanjut..."
+          fi
+
+      - name: Generate Android project
+        run: |
+          npx cap add android
+          npx cap sync android
+
+      - name: Patch Android manifest
+        run: |
+          if [ -f scripts/patch-android-manifest.js ]; then
+            node scripts/patch-android-manifest.js
+          else
+            echo "patch-android-manifest.js tidak ada, lanjut..."
+          fi
+
+      - name: Patch RAWBT native bridge
+        run: |
+          if [ -f scripts/patch-android-rawbt.js ]; then
+            node scripts/patch-android-rawbt.js
+          else
+            echo "patch-android-rawbt.js tidak ada, lanjut..."
+          fi
+
+      - name: Patch ImageSaver native plugin
+        run: |
+          if [ -f scripts/patch-android-imagesaver.js ]; then
+            node scripts/patch-android-imagesaver.js
+          else
+            echo "patch-android-imagesaver.js tidak ada, lanjut..."
+          fi
+
+      - name: Patch CsvSaver native plugin
+        run: |
+          if [ -f scripts/patch-android-csvsaver.js ]; then
+            node scripts/patch-android-csvsaver.js
+          else
+            echo "patch-android-csvsaver.js tidak ada, lanjut..."
+          fi
+
+      - name: Patch final native saver
+        run: |
+          if [ -f scripts/patch-android-final-native.js ]; then
+            node scripts/patch-android-final-native.js
+          else
+            echo "patch-android-final-native.js tidak ada, lanjut..."
+          fi
+
+      - name: Patch PSM Native saver
+        run: |
+          if [ -f scripts/patch-android-psmnative.js ]; then
+            node scripts/patch-android-psmnative.js
+          else
+            echo "ERROR: scripts/patch-android-psmnative.js tidak ditemukan"
+            exit 1
+          fi
+
+      - name: Patch Android icon
+        run: |
+          if [ -f scripts/patch-android-icons.js ]; then
+            node scripts/patch-android-icons.js
+          elif [ -f scripts/patch-android-icon.js ]; then
+            node scripts/patch-android-icon.js
+          else
+            echo "WARNING: script patch icon tidak ditemukan, lanjut tanpa patch icon"
+          fi
+
+      - name: Sync Android after patches
+        run: npx cap sync android
+
+      - name: Verify native plugins
+        run: |
+          echo "=== Cek native plugin ==="
+
+          if ! find android -name "*ImageSaver*" -type f | grep -q ImageSaver; then
+            echo "ERROR: ImageSaver native plugin tidak ditemukan"
+            exit 1
+          fi
+
+          if ! find android -name "*CsvSaver*" -type f | grep -q CsvSaver; then
+            echo "ERROR: CsvSaver native plugin tidak ditemukan"
+            exit 1
+          fi
+
+          if ! find android -name "*PsmNative*" -type f | grep -q PsmNative; then
+            echo "ERROR: PsmNative native plugin tidak ditemukan"
+            exit 1
+          fi
+
+          echo "Native plugin ditemukan:"
+          find android -name "*ImageSaver*" -type f
+          find android -name "*CsvSaver*" -type f
+          find android -name "*PsmNative*" -type f
+
+          echo "=== Cek registerPlugin di MainActivity ==="
+          grep -R "registerPlugin" android/app/src/main/java || true
+
+      - name: Verify Android icon files
+        run: |
+          echo "=== Cek icon Android ==="
+          find android/app/src/main/res -name "ic_launcher*" -type f | sort || true
+
+          echo "=== Cek AndroidManifest icon ==="
+          grep -R "android:icon" android/app/src/main/AndroidManifest.xml || true
+          grep -R "android:roundIcon" android/app/src/main/AndroidManifest.xml || true
+
+      - name: Build debug APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Prepare APK output
+        run: |
+          mkdir -p output
+          cp android/app/build/outputs/apk/debug/*.apk output/PSM-SAWIT-FIX-debug.apk
+          ls -lh output
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PSM-SAWIT-FIX-debug-apk
+          path: output/PSM-SAWIT-FIX-debug.apk
