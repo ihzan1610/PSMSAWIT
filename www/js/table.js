@@ -1,13 +1,16 @@
 // ===============================
 // PSM SAWIT - table.js
-// Versi 8: tabel aman untuk ID angka/string, HTML, dan pilihan data.
+// Versi FIX MONITORING: cloud dekat nomor, ongkos terlihat, urutan edit tidak berubah.
 // ===============================
 
 function updateLists() {
     let o = new Set(savedOwners), d = new Set(savedDrivers);
     db.forEach(x => { if(x.owner) o.add(x.owner); if(x.driver) d.add(x.driver); });
-    document.getElementById('l-own').innerHTML = [...o].map(x => `<option value="${escapeHtml(x)}">`).join('');
-    document.getElementById('l-dri').innerHTML = [...d].map(x => `<option value="${escapeHtml(x)}">`).join('');
+    savedOwners = [...o].filter(Boolean).map(x => String(x).toUpperCase().trim()).filter(Boolean).sort();
+    savedDrivers = [...d].filter(Boolean).map(x => String(x).toUpperCase().trim()).filter(Boolean).sort();
+    localStorage.setItem('psm_owners', JSON.stringify(savedOwners));
+    localStorage.setItem('psm_drivers', JSON.stringify(savedDrivers));
+    if (typeof closeAllPsmNameLists === 'function') closeAllPsmNameLists();
 }
 
 function fillTarif() {
@@ -61,8 +64,9 @@ function renderLiveTable() {
         (!s || x.date >= s) &&
         (!e || x.date <= e)
     );
-    filtered.sort((a, b) => new Date(a.date + 'T' + (a.time||'00:00')) - new Date(b.date + 'T' + (b.time||'00:00')));
-
+    // Jangan sort berdasarkan tanggal/jam.
+    // Nomor dan posisi baris harus mengikuti urutan input asli agar cocok dengan buku manual.
+    // Saat data diedit dan tanggal/jam berubah, posisi data tetap tidak pindah.
     let isFiltered = n || d || s || e;
     let displayData = isFiltered ? filtered : filtered.slice(-150);
 
@@ -78,6 +82,7 @@ function renderLiveTable() {
         body += `<tr class="${idx === curIdx ? 'active-row' : ''}">
             <td align="center"><input type="checkbox" class="row-chk" value="${escapeHtml(id)}" ${isChecked} onchange="toggleRow(this.value, this)"></td>
             <td align="center" onclick="editH(${idx})">${idx + 1}</td>
+            <td align="center" title="Status cloud" onclick="editH(${idx})">${awan}</td>
             <td align="center" onclick="editH(${idx})">${fTgl(x.date)}</td>
             <td onclick="editH(${idx})"><b>${escapeHtml(x.owner)}</b></td>
             <td onclick="editH(${idx})">${escapeHtml(x.driver)}</td>
@@ -88,8 +93,10 @@ function renderLiveTable() {
             <td align="right" onclick="editH(${idx})">${fNum(x.price)}</td>
             <td align="right" onclick="editH(${idx})">${fNum(x.kotor)}</td>
             <td align="right" style="font-weight:bold; color:#059669" onclick="editH(${idx})">${fNum(x.bersih)}</td>
-            <td align="center">${awan}</td>
+            <td align="right" onclick="editH(${idx})">${fNum(x.fl || 0)}</td>
+            <td align="right" onclick="editH(${idx})">${fNum(x.fj || 0)}</td>
+            <td align="right" onclick="editH(${idx})">${fNum(x.fp || 0)}</td>
         </tr>`;
     });
-    document.getElementById('live-body').innerHTML = body || '<tr><td colspan="13" align="center">Kosong</td></tr>';
+    document.getElementById('live-body').innerHTML = body || '<tr><td colspan="16" align="center">Kosong</td></tr>';
 }

@@ -10,7 +10,7 @@ const DEFAULT_NOTA_SETTINGS = {
     operatorName: 'Asri',
     logoDataUrl: '',
     showLogoImage: true,
-    showLogoThermalBitmap: false
+    showLogoThermalBitmap: true
 };
 
 function migrateOldNotaSettings() {
@@ -23,7 +23,7 @@ function migrateOldNotaSettings() {
             operatorName: old.operatorName || 'Asri',
             logoDataUrl: old.logoDataUrl || '',
             showLogoImage: old.showLogoImage !== false,
-            showLogoThermalBitmap: false
+            showLogoThermalBitmap: true
         });
         localStorage.setItem(PSM_NOTA_SETTINGS_KEY, JSON.stringify(migrated));
     } catch (err) {

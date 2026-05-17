@@ -8,7 +8,7 @@
     <meta name="theme-color" content="#059669">
     <link rel="apple-touch-icon" href="assets/icons/logo-nota-default.png">
     <link rel="icon" href="assets/icons/logo-nota-default.png">
-    <link rel="stylesheet" href="css/style.css?v=370">
+    <link rel="stylesheet" href="css/style.css?v=430">
 </head>
 <body>
 
@@ -83,8 +83,22 @@
         <div class="card-title">📝 INPUT TIMBANGAN</div>
         <input type="hidden" id="in-id">
         <div class="form-row">
-            <div class="form-group"><label>Pemilik</label><input type="text" id="in-owner" list="l-own" oninput="this.value = this.value.toUpperCase().trimStart(); fillTarif(); saveDraft();"></div>
-            <div class="form-group"><label>Sopir</label><input type="text" id="in-driver" list="l-dri" oninput="this.value = this.value.toUpperCase().trimStart(); saveDraft();"></div>
+            <div class="form-group">
+                <label>Pemilik</label>
+                <div class="psm-autocomplete" data-type="owner">
+                    <input type="text" id="in-owner" autocomplete="off" autocapitalize="characters" spellcheck="false" oninput="handlePsmNameInput('owner')">
+                    <button type="button" class="psm-ac-arrow" onclick="togglePsmNameList('owner')" title="Lihat daftar pemilik">▼</button>
+                    <div id="psm-owner-list" class="psm-ac-list"></div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Sopir</label>
+                <div class="psm-autocomplete" data-type="driver">
+                    <input type="text" id="in-driver" autocomplete="off" autocapitalize="characters" spellcheck="false" oninput="handlePsmNameInput('driver')">
+                    <button type="button" class="psm-ac-arrow" onclick="togglePsmNameList('driver')" title="Lihat daftar sopir">▼</button>
+                    <div id="psm-driver-list" class="psm-ac-list"></div>
+                </div>
+            </div>
         </div>
         <div class="form-row">
             <div class="form-group"><label>T1 (Bruto)</label><input type="number" id="in-w1" oninput="updateTime(); validateWeights(); saveDraft();"></div>
@@ -132,7 +146,7 @@
                 <thead>
                     <tr>
                         <th title="Pilih Semua"><input type="checkbox" id="chk-all" onchange="toggleAll(this)" style="transform: scale(1.3); cursor: pointer;"></th>
-                        <th>No</th><th>Tgl</th><th>Pemilik</th><th>Sopir</th><th>T1</th><th>T2</th><th>Nett</th><th>-3%</th><th>Rp</th><th>Kotor</th><th>Bersih</th><th>☁️</th>
+                        <th>No</th><th>☁️</th><th>Tgl</th><th>Pemilik</th><th>Sopir</th><th>T1</th><th>T2</th><th>Nett</th><th>-3%</th><th>Rp</th><th>Kotor</th><th>Bersih</th><th>Lgsr</th><th>Jln</th><th>Pnn</th>
                     </tr>
                 </thead>
                 <tbody id="live-body"></tbody>
@@ -165,6 +179,18 @@
         </div>
 
         
+
+        <div style="margin-bottom: 20px; background: var(--bg); padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
+            <h4 style="margin: 0 0 10px 0; font-size: 13px; color:var(--primary);">🔐 Menu Format, Suara & PIN</h4>
+            <p style="font-size:10px; color:#64748b; margin:0 0 10px 0; line-height:1.4;">Menu ini dikunci dengan PIN agar format nota, suara tombol, dan PIN akses tidak mudah diubah.</p>
+            <button onclick="openPrivateSettingsPanel()" style="background:#111827; color:white; border:none; padding:12px; border-radius:8px; width:100%; font-weight:bold; cursor:pointer;">🔐 MASUK MENU TERKUNCI</button>
+        </div>
+
+        <div id="private-settings-panel" style="display:none; margin-bottom: 20px; padding: 12px; border-radius: 12px; border: 2px solid #111827; background: rgba(17,24,39,0.03);">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:12px;">
+                <b style="font-size:13px; color:var(--primary);">🔓 Pengaturan Terkunci Terbuka</b>
+                <button onclick="closePrivateSettingsPanel()" style="background:#64748b; color:white; border:none; border-radius:8px; padding:7px 10px; font-weight:bold; font-size:11px;">TUTUP</button>
+            </div>
 
         <div style="margin-bottom: 20px; background: var(--bg); padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
             <h4 style="margin: 0 0 10px 0; font-size: 13px; color:var(--primary);">🧾 Format Nota</h4>
@@ -211,6 +237,8 @@
             <button onclick="ubahPin()" style="background:#0ea5e9; color:white; border:none; padding:10px; border-radius:8px; width:100%; font-weight:bold;">SIMPAN PIN BARU</button>
         </div>
 
+        </div>
+
         <div style="margin-bottom: 20px; background: var(--bg); padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
             <h4 style="margin: 0 0 10px 0; font-size: 13px;">Manajemen Data & Backup</h4>
             <div style="display: flex; gap: 8px; margin-bottom: 8px;">
@@ -230,25 +258,25 @@
     </div>
 </div>
 
-<datalist id="l-own"></datalist><datalist id="l-dri"></datalist>
-<script src="vendor/html2canvas.min.js?v=370"></script>
-<script src="js/config.js?v=370"></script>
-<script src="js/state.js?v=370"></script>
-<script src="js/helper.js?v=370"></script>
-<script src="js/db.js?v=370"></script>
-<script src="js/sound.js?v=370"></script>
-<script src="js/security.js?v=370"></script>
-<script src="js/ui.js?v=370"></script>
-<script src="js/storage.js?v=370"></script>
-<script src="js/sync.js?v=370"></script>
-<script src="js/table.js?v=370"></script>
-<script src="js/form.js?v=370"></script>
-<script src="js/settings-format.js?v=370"></script>
-<script src="js/report.js?v=370"></script>
-<script src="js/thermal.js?v=370"></script>
-<script src="js/native.js?v=370"></script>
-<script src="js/backup.js?v=370"></script>
-<script src="js/app.js?v=370"></script>
-<script src="js/sw-register.js?v=370"></script>
+<script src="vendor/html2canvas.min.js?v=430"></script>
+<script src="js/config.js?v=430"></script>
+<script src="js/state.js?v=430"></script>
+<script src="js/helper.js?v=430"></script>
+<script src="js/db.js?v=430"></script>
+<script src="js/sound.js?v=430"></script>
+<script src="js/security.js?v=430"></script>
+<script src="js/ui.js?v=430"></script>
+<script src="js/storage.js?v=430"></script>
+<script src="js/sync.js?v=430"></script>
+<script src="js/table.js?v=430"></script>
+<script src="js/autocomplete.js?v=430"></script>
+<script src="js/form.js?v=430"></script>
+<script src="js/settings-format.js?v=430"></script>
+<script src="js/report.js?v=430"></script>
+<script src="js/thermal.js?v=430"></script>
+<script src="js/native.js?v=430"></script>
+<script src="js/backup.js?v=430"></script>
+<script src="js/app.js?v=430"></script>
+<script src="js/sw-register.js?v=430"></script>
 </body>
 </html>

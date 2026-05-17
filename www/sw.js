@@ -1,9 +1,9 @@
 // ===============================
 // PSM SAWIT - sw.js
-// V36 cache: PsmNative saver final
+// V43 cache: setting terkunci + monitoring order + native saver
 // ===============================
 
-const CACHE_NAME = 'psm-sawit-v33-final';
+const CACHE_NAME = 'psm-sawit-fix-setting-terkunci-v43';
 
 const APP_SHELL = [
   './',
@@ -20,6 +20,7 @@ const APP_SHELL = [
   './js/storage.js',
   './js/sync.js',
   './js/table.js',
+  './js/autocomplete.js',
   './js/form.js',
   './js/settings-format.js',
   './js/report.js',

@@ -1,6 +1,6 @@
 // ===============================
 // PSM SAWIT - ui.js
-// PSM SAWIT FIX: toolbar edit stabil, tanggal/jam tidak hilang saat lihat/edit data.
+// PSM SAWIT FIX: toolbar edit stabil + menu pengaturan terkunci.
 // ===============================
 
     window.addEventListener('hashchange', () => {
@@ -13,12 +13,42 @@
     });
 
     function openSettings() { 
-        beepClick(); 
+        beepClick();
+        const privatePanel = document.getElementById('private-settings-panel');
+        if (privatePanel) privatePanel.style.display = 'none';
+        if (typeof refreshNotaSettingsUI === 'function') refreshNotaSettingsUI();
+        const settingSuara = document.getElementById('setting-suara');
+        if (settingSuara && typeof isSoundOn === 'function') settingSuara.checked = isSoundOn();
         document.getElementById('settings-modal').style.display = 'block'; 
         location.hash = 'settings'; 
     }
+
+    function openPrivateSettingsPanel() {
+        beepClick();
+        const input = prompt('Masukkan PIN untuk membuka menu Format Nota, Suara, dan Ubah PIN:');
+        if (input === null) return;
+        if (typeof getPin === 'function' && input === getPin()) {
+            const privatePanel = document.getElementById('private-settings-panel');
+            if (privatePanel) privatePanel.style.display = 'block';
+            if (typeof refreshNotaSettingsUI === 'function') refreshNotaSettingsUI();
+            const settingSuara = document.getElementById('setting-suara');
+            if (settingSuara && typeof isSoundOn === 'function') settingSuara.checked = isSoundOn();
+            beepSuccess();
+        } else {
+            beepError();
+            alert('PIN salah. Menu terkunci tidak dibuka.');
+        }
+    }
+
+    function closePrivateSettingsPanel() {
+        beepClick();
+        const privatePanel = document.getElementById('private-settings-panel');
+        if (privatePanel) privatePanel.style.display = 'none';
+    }
     function closeSettings() { 
-        beepClick(); 
+        beepClick();
+        const privatePanel = document.getElementById('private-settings-panel');
+        if (privatePanel) privatePanel.style.display = 'none';
         if (location.hash === '#settings') { history.back(); } 
         else { document.getElementById('settings-modal').style.display = 'none'; }
     }
